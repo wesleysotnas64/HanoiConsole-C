@@ -14,11 +14,13 @@ struct torre{
 };
 
 TORRE hanoi[QTD]; //Tabuleiro. Hanoi básico com 3 torres
+int   jogadas;
 
 //Assinaturas
 void inicializa_hanoi();
 void imprime_hanoi();
 void de_para(int origem, int destino);
+void move(int origem, int destino, int mao);
 
 int main(){
 
@@ -34,6 +36,7 @@ int main(){
 void inicializa_hanoi(){
 
     int c = 5;
+    int jogadas = 0;
     
     for(int i = 0; i < TAM; i++){
         hanoi[0].vet[i] = c--;
@@ -63,15 +66,13 @@ void imprime_hanoi(){
     printf("\n");
     for(int i = 0; i < (QTD-1)*3; i++) printf(" ");
     printf(" hanoi\n");
+    printf("Jogadass: %d\n", jogadas);
 }
 
 void de_para(int origem, int destino){
 
     origem--;
     destino--;
-
-    printf("Origem: %d\n", origem);
-    printf("Destino: %d\n", destino);
 
     //verificar se o movimento é válido
     int lim_origem  = (origem  < 0) || (origem  > QTD);
@@ -81,26 +82,18 @@ void de_para(int origem, int destino){
     if(lim_origem || lim_destino || iguais){
         //Movimento inválido
         printf("Movimento inválido!\n");
-        printf("Passei aqui!\n");
         sleep(3);
     } else{
 
         int mao_aux = hanoi[origem].vet[hanoi[origem].tam-1];
 
         int inicial_maior_que_destino = mao_aux > hanoi[destino].vet[hanoi[destino].tam-1];
-        int destino_eh_zero = hanoi[destino].vet[hanoi[destino].tam-1] == 0;
+        int destino_eh_zero           = hanoi[destino].vet[hanoi[destino].tam-1] == 0;
 
-        printf("Mão: %d\n", mao_aux);
         if(inicial_maior_que_destino){
 
             if(destino_eh_zero){
-                hanoi[origem].vet[hanoi[origem].tam-1] = 0;
-                hanoi[origem].tam--;
-
-                hanoi[destino].vet[hanoi[destino].tam] = mao_aux;
-                hanoi[destino].tam++;
-
-                printf("Topo da torre destino: %d\n", hanoi[destino].vet[hanoi[destino].tam-1]);
+                move(origem, destino, mao_aux);
 
                 printf("Moveu [%d]: de %d | para %d\n", mao_aux, origem+1, destino+1);
                 sleep(TIME_SLEEP);
@@ -111,13 +104,7 @@ void de_para(int origem, int destino){
 
             
         } else{
-            hanoi[origem].vet[hanoi[origem].tam-1] = 0;
-            hanoi[origem].tam--;
-
-            hanoi[destino].vet[hanoi[destino].tam] = mao_aux;
-            hanoi[destino].tam++;
-
-            printf("Topo da torre destino: %d\n", hanoi[destino].vet[hanoi[destino].tam-1]);
+            move(origem, destino, mao_aux);
 
             printf("Moveu [%d]: de %d | para %d\n", mao_aux, origem+1, destino+1);
             sleep(TIME_SLEEP);
@@ -125,3 +112,13 @@ void de_para(int origem, int destino){
     }
 }
 
+void move(int origem, int destino, int mao){
+
+    hanoi[origem].vet[hanoi[origem].tam-1] = 0;
+    hanoi[origem].tam--;
+
+    hanoi[destino].vet[hanoi[destino].tam] = mao;
+    hanoi[destino].tam++;
+
+    jogadas++;
+}
