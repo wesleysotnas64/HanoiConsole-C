@@ -25,9 +25,8 @@ int main(){
     inicializa_hanoi();
     imprime_hanoi();
 
-    //de_para(1, 3);
-
-    //imprime_hanoi();
+    de_para(1, 3);
+    imprime_hanoi();
 
     return 0;
 }
@@ -35,26 +34,29 @@ int main(){
 void inicializa_hanoi(){
 
     int c = 5;
+    
     for(int i = 0; i < TAM; i++){
-        torre1.vet[i] = c--;
-        torre2.vet[i] = 0;
-        torre3.vet[i] = 0;
+        hanoi[0].vet[i] = c--;
+        hanoi[1].vet[i] = 0;
+        hanoi[2].vet[i] = 0;
     }
 
-    torre1.tam = 5;
-    torre2.tam = 0;
-    torre3.tam = 0;
+    hanoi[0].tam = 5;
+    hanoi[1].tam = 0;
+    hanoi[2].tam = 0;
+
 }
 
 void imprime_hanoi(){
     //torres
-    for(int i = 0; i < TAM; i++){
-        int valor = hanoi[i].vet[i];
-        if(valor == 0) printf(" | ");
-        else printf("[%d]", valor);
+    for(int i = TAM-1; i >= 0; i--){
+        for(int j = 0; j < QTD; j++){
+            int valor = hanoi[j].vet[i];
+            if(valor == 0) printf(" | ");
+            else printf("[%d]", valor);
+        }
+        printf("\n");
     }
-
-
 
     //base
     for(int i = 0; i < QTD; i++) printf("-%d-", i+1);
@@ -76,8 +78,6 @@ void de_para(int origem, int destino){
     int lim_destino = (destino < 0) || (destino > QTD);
     int iguais      = (origem == destino);
 
-    
-
     if(lim_origem || lim_destino || iguais){
         //Movimento inválido
         printf("Movimento inválido!\n");
@@ -85,22 +85,43 @@ void de_para(int origem, int destino){
         sleep(3);
     } else{
 
-        int mao_aux = hanoi[origem].vet[hanoi[origem].tam];
-        printf("Mão: %d", mao_aux);
-        if(mao_aux > hanoi[destino].vet[hanoi[destino].tam]){
-            printf("Movimento inválido! Peça inicial maior que destino\n");
-            sleep(TIME_SLEEP);
+        int mao_aux = hanoi[origem].vet[hanoi[origem].tam-1];
+
+        int inicial_maior_que_destino = mao_aux > hanoi[destino].vet[hanoi[destino].tam-1];
+        int destino_eh_zero = hanoi[destino].vet[hanoi[destino].tam-1] == 0;
+
+        printf("Mão: %d\n", mao_aux);
+        if(inicial_maior_que_destino){
+
+            if(destino_eh_zero){
+                hanoi[origem].vet[hanoi[origem].tam-1] = 0;
+                hanoi[origem].tam--;
+
+                hanoi[destino].vet[hanoi[destino].tam] = mao_aux;
+                hanoi[destino].tam++;
+
+                printf("Topo da torre destino: %d\n", hanoi[destino].vet[hanoi[destino].tam-1]);
+
+                printf("Moveu [%d]: de %d | para %d\n", mao_aux, origem+1, destino+1);
+                sleep(TIME_SLEEP);
+            } else{
+                printf("Movimento inválido! Peça inicial maior que destino\n");
+                sleep(TIME_SLEEP);
+            }
+
+            
         } else{
-            hanoi[origem].vet[hanoi[origem].tam] = 0;
+            hanoi[origem].vet[hanoi[origem].tam-1] = 0;
             hanoi[origem].tam--;
 
             hanoi[destino].vet[hanoi[destino].tam] = mao_aux;
             hanoi[destino].tam++;
 
-            printf("Topo da torre destino: %d", hanoi[destino].vet[hanoi[destino].tam-1]);
+            printf("Topo da torre destino: %d\n", hanoi[destino].vet[hanoi[destino].tam-1]);
 
             printf("Moveu [%d]: de %d | para %d\n", mao_aux, origem+1, destino+1);
             sleep(TIME_SLEEP);
         }
     }
 }
+
