@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define TAM 5 //Tamanho de cada torre
+#define TAM 4 //Tamanho de cada torre
 #define QTD 3 //Quantidade de torres
 #define TIME_SLEEP 3
 
@@ -21,22 +21,24 @@ void inicializa_hanoi();
 void imprime_hanoi();
 void de_para(int origem, int destino);
 void move(int origem, int destino, int mao);
+void verifica_hanoi();
+void menu();
 
 int main(){
 
     inicializa_hanoi();
-    imprime_hanoi();
+    menu();
 
-    de_para(1, 3);
-    imprime_hanoi();
+    //de_para(1, 3);
+    //imprime_hanoi();
 
     return 0;
 }
 
 void inicializa_hanoi(){
 
-    int c = 5;
-    int jogadas = 0;
+    int c = TAM;
+    jogadas = 0;
     
     for(int i = 0; i < TAM; i++){
         hanoi[0].vet[i] = c--;
@@ -44,7 +46,7 @@ void inicializa_hanoi(){
         hanoi[2].vet[i] = 0;
     }
 
-    hanoi[0].tam = 5;
+    hanoi[0].tam = TAM;
     hanoi[1].tam = 0;
     hanoi[2].tam = 0;
 
@@ -66,7 +68,7 @@ void imprime_hanoi(){
     printf("\n");
     for(int i = 0; i < (QTD-1)*3; i++) printf(" ");
     printf(" hanoi\n");
-    printf("Jogadass: %d\n", jogadas);
+    printf("Jogadas: %d\n", jogadas);
 }
 
 void de_para(int origem, int destino){
@@ -75,11 +77,12 @@ void de_para(int origem, int destino){
     destino--;
 
     //verificar se o movimento é válido
-    int lim_origem  = (origem  < 0) || (origem  > QTD);
-    int lim_destino = (destino < 0) || (destino > QTD);
-    int iguais      = (origem == destino);
+    int lim_origem   = (origem  < 0) || (origem  > QTD);
+    int lim_destino  = (destino < 0) || (destino > QTD);
+    int iguais       = (origem == destino);
+    int origem_vazia = (hanoi[origem].tam == 0);
 
-    if(lim_origem || lim_destino || iguais){
+    if(lim_origem || lim_destino || iguais || origem_vazia){
         //Movimento inválido
         printf("Movimento inválido!\n");
         sleep(3);
@@ -110,6 +113,7 @@ void de_para(int origem, int destino){
             sleep(TIME_SLEEP);
         }
     }
+    menu();
 }
 
 void move(int origem, int destino, int mao){
@@ -121,4 +125,37 @@ void move(int origem, int destino, int mao){
     hanoi[destino].tam++;
 
     jogadas++;
+
+    verifica_hanoi();
+}
+
+void verifica_hanoi(){
+    if(hanoi[QTD-1].tam == TAM){
+        imprime_hanoi();
+        printf("\nFIM DE JOGO! PARABÉNS!\n");
+        sleep(TIME_SLEEP*2);
+        inicializa_hanoi();
+    }
+
+    menu();
+}
+
+void menu(){
+    system("clear");
+    printf("--------------\n");
+    printf("TORRE DE HANOI\n");
+    printf("--------------\n");
+
+    imprime_hanoi();
+
+    int origem;
+    int destino;
+
+    printf("---------\n");
+    printf("Origem : ");
+    scanf("%d", &origem);
+    printf("Destino: ");
+    scanf("%d", &destino);
+
+    de_para(origem, destino);
 }
